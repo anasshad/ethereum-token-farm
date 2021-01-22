@@ -104,5 +104,15 @@ contract("TokenFarm", ([owner, investor]) => {
         "investor dapp balance"
       );
     });
+
+    it("returns dai tokens on unstaking", async () => {
+      await tokenFarm.unstakeTokens({ from: investor });
+      const stakeBalance = await tokenFarm.stakeBalance(investor);
+      assert.equal(
+        stakeBalance.toString(),
+        tokens("0"),
+        "investor stake balance should be zero after unstaking"
+      );
+    });
   });
 });

@@ -59,4 +59,19 @@ contract TokenFarm {
             }
         }
     }
+
+    //unstake tokens
+    function unstakeTokens() public {
+        //stakeBalance should be greater than zero
+        require(stakeBalance[msg.sender] > 0, "Stake balance is zero");
+
+        //transfer all dai tokens back to investor
+        daiToken.transfer(msg.sender, stakeBalance[msg.sender]);
+
+        //set stake balance of investor to zero
+        stakeBalance[msg.sender] = 0;
+
+        //set staking to false
+        isStaking[msg.sender] = false;
+    }
 }

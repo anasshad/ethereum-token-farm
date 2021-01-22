@@ -2,17 +2,20 @@ import React, { useState } from "react";
 import { newContextComponents } from "@drizzle/react-components";
 import { ToastContainer, toast } from "react-toastify";
 
+import 'react-toastify/dist/ReactToastify.css';
+
 const { AccountData, ContractData, ContractForm } = newContextComponents;
 
 const Main = ({ drizzle, drizzleState }) => {
   const [amount, setAmount] = useState(0);
   const account = drizzleState.accounts[0];
+  const { TokenFarm, DaiToken } = drizzle.contracts;
 
   console.log(drizzle);
 
   const stakeTokens = () => {
     if (amount > 0) {
-      const { TokenFarm, DaiToken } = drizzle.contracts;
+      
       const tokenFarmAddress = TokenFarm.address;
       DaiToken.methods
         .approve(tokenFarmAddress, amount)
@@ -22,15 +25,7 @@ const Main = ({ drizzle, drizzleState }) => {
             .stakeTokens(amount)
             .send({ from: account })
             .on("transactionHash", (hash) => {
-              toast(`You have successfully staked ${amount} Dai Tokens`, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-              });
+              toast(`You have successfully staked ${amount} Dai Tokens`);
             });
         });
       console.log(tokenFarmAddress);
@@ -38,6 +33,13 @@ const Main = ({ drizzle, drizzleState }) => {
       console.log("Amount should be greater than zero");
     }
   };
+
+  const unstakeTokens = () => {
+    TokenFarm.methods.unstakeTokens.send({ from: account })
+    .on("transactionHash", (hash) => {
+      toast(`You have successfully unstaked`);
+    });
+  }
 
   return (
     <div>
@@ -76,6 +78,7 @@ const Main = ({ drizzle, drizzleState }) => {
         />
         <button onClick={stakeTokens}>Submit</button>
       </label>
+      <button onClick={() => unstakeTokens}>Unstake Tokens</button>
       <ToastContainer
         position="top-right"
         autoClose={5000}
